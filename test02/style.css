@@ -1,0 +1,35 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #eee;
+}
+body > * {
+  background: #fff;
+  padding: 1rem;
+}
+
+form {
+  margin: 0 auto;
+  width: 30rem;
+}
+form h2 {
+  text-align: center;
+}
+form label {
+  width: 90%;
+  margin: 0 auto;
+  display: block;
+}
+form label input, form label button {
+  width: 100%;
+  padding: 0.5rem 0;
+}
+form label > * {
+  margin-bottom: 0.5rem;
+}
+
+/*# sourceMappingURL=style.css.map */

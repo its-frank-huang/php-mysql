@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>test-todo</title>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<form id="form">
+			<h2>Todo</h2>
+			<label>
+				<span>标题</span>
+				<input type="text" class="input-title" />
+			</label>
+			<label>
+				<span>内容</span>
+				<input type="text" class="input-content" />
+			</label>
+			<label>
+				<button type="submit">添加</button>
+			</label>
+		</form>
+		<div class="output">
+			Lorem ipsum dolor sit amet consectetur, adipisicing elit. Minima,
+			eaque quisquam sit alias praesentium est cupiditate veniam veritatis
+			ipsa consequuntur officia itaque repellat nemo voluptatibus quas
+			reprehenderit saepe ex. Consequatur? Lorem ipsum dolor sit amet
+			consectetur, adipisicing elit. Minima, eaque quisquam sit alias
+			praesentium est cupiditate veniam veritatis ipsa consequuntur
+			officia itaque repellat nemo voluptatibus quas reprehenderit saepe
+			ex. Consequatur? Lorem ipsum dolor sit amet consectetur, adipisicing
+			elit. Minima, eaque quisquam sit alias praesentium est cupiditate
+			veniam veritatis ipsa consequuntur officia itaque repellat nemo
+			voluptatibus quas reprehenderit saepe ex. Consequatur? Lorem ipsum
+			dolor sit amet consectetur, adipisicing elit. Minima, eaque quisquam
+			sit alias praesentium est cupiditate veniam veritatis ipsa
+			consequuntur officia itaque repellat nemo voluptatibus quas
+			reprehenderit saepe ex. Consequatur? Lorem ipsum dolor sit amet
+			consectetur, adipisicing elit. Minima, eaque quisquam sit alias
+			praesentium est cupiditate veniam veritatis ipsa consequuntur
+			officia itaque repellat nemo voluptatibus quas reprehenderit saepe
+			ex. Consequatur? Lorem ipsum dolor sit amet consectetur, adipisicing
+			elit. Minima, eaque quisquam sit alias praesentium est cupiditate
+			veniam veritatis ipsa consequuntur officia itaque repellat nemo
+			voluptatibus quas reprehenderit saepe ex. Consequatur? Lorem ipsum
+			dolor sit amet consectetur, adipisicing elit. Minima, eaque quisquam
+			sit alias praesentium est cupiditate veniam veritatis ipsa
+			consequuntur officia itaque repellat nemo voluptatibus quas
+			reprehenderit saepe ex. Consequatur? Lorem ipsum dolor sit amet
+			consectetur, adipisicing elit. Minima, eaque quisquam sit alias
+			praesentium est cupiditate veniam veritatis ipsa consequuntur
+			officia itaque repellat nemo voluptatibus quas reprehenderit saepe
+			ex. Consequatur? Lorem ipsum dolor sit amet consectetur, adipisicing
+			elit. Minima, eaque quisquam sit alias praesentium est cupiditate
+			veniam veritatis ipsa consequuntur officia itaque repellat nemo
+			voluptatibus quas reprehenderit saepe ex. Consequatur?
+		</div>
+	</body>
+</html>
+<script>
+	let formEl = document.querySelector("#form");
+
+	formEl.addEventListener("submit", e => {
+		e.preventDefault();
+		let titleEl = document.querySelector(".input-title");
+		let contentEl = document.querySelector(".input-content");
+
+		httpre(titleEl.value);
+	});
+
+	function httpre(data) {
+		if (window.XMLHttpRequest) {
+			// code for IE7+, Firefox, Chrome, Opera, Safari
+			xmlhttp = new XMLHttpRequest();
+		} else {
+			// code for IE6, IE5
+			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		xmlhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+                document.querySelector('.output').innerHTML = this.responseText;
+			}
+		};
+		xmlhttp.open("GET", "test.php?q=" + data, true);
+		xmlhttp.send();
+	}
+</script>
