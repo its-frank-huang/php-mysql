@@ -3,20 +3,22 @@ init();
 
 function init()
 {
-
     $action = $_REQUEST["q"];
+
     if (!$action) {
         echo "error";
     }
 
     if ($action == "read") {
-        read();
+        read(false);
     } elseif ($action == "add") {
         add();
     } elseif ($action == "remove") {
         remove();
     } elseif ($action == "update") {
         update();
+    } elseif ($action == "search") {
+        read(true);
     }
 }
 
@@ -36,9 +38,19 @@ function remove()
     mysqlRe("DELETE FROM todo WHERE id='{$data->id}'");
 }
 
-function read()
+function read($bool)
 {
-    $result = mysqlRe("SELECT * from todo");
+
+    if ($bool) {
+        $data = json_decode($_REQUEST["data"]);
+        $result = mysqlRe("SELECT * FROM todo WHERE id={$data->query}");
+        if ($result->num_rows == 0) {
+            echo "error";
+        };
+    } else {
+        $result = mysqlRe("SELECT * from todo");
+    }
+
 
     $arr = array();
     $i = 0;

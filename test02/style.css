@@ -2,6 +2,10 @@
   box-sizing: border-box;
 }
 
+button , input{
+  border: 1px solid #aaa;
+}
+
 body {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -12,7 +16,26 @@ body > * {
   padding: 1rem;
 }
 
-form {
+#searchForm{
+  font-size: 0;
+}
+
+#searchForm > *{
+  font-size: 1rem;
+  vertical-align: middle;
+}
+
+#searchForm input{
+  width: 90%;
+  padding-top: .2rem;
+  border-right-width: 0px;
+}
+
+#searchForm button{
+  width: 10%;
+}
+
+#form {
   margin: 0 auto;
   width: 30rem;
 }
@@ -40,4 +63,16 @@ form label > * {
 }
 .Thead{
   border-color: #444;
+}
+
+.operation{
+  font-size: 0;
+}
+
+.operation > *{
+  font-size: 1rem;
+}
+
+.operation > *:first-child{
+  border-right-width: 0px; 
 }

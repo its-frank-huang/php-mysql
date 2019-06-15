@@ -24,6 +24,10 @@
 			</label>
 		</form>
 		<div class="output">
+			<form id="searchForm">
+				<input type="text" class="input-search" />
+				<button type="submit">搜索</button>
+			</form>
 			<div class="Thead">
 				<div>ID</div>
 				<div>Title</div>
@@ -32,6 +36,7 @@
 				<div>Operation</div>
 			</div>
 			<div class="Tbody"></div>
+			<div class="php"></div>
 		</div>
 	</body>
 </html>
@@ -48,35 +53,64 @@
 			e.preventDefault();
 			submitAction();
 		});
+
+		let searchFormEl = document.querySelector("#searchForm");
+
+		searchFormEl.addEventListener("submit", e => {
+			e.preventDefault();
+			read();
+		});
 	}
 
 	function read() {
-		httpRe(re => {
-			if (!re) return;
+		let searchData = document.querySelector(".input-search").value;
+		let action = "read";
+		let data;
+		let phpEl = document.querySelector(".php");
 
-			let TbodyEl = document.querySelector(".Tbody");
-			TbodyEl.innerHTML = "";
+		if (searchData) {
+			action = "search";
+			data = { query: searchData };
+		}
 
-			datalist = JSON.parse(re);
+		httpRe(
+			re => {
+				if (re == "error[]") {
+					
+					phpEl.innerHTML = "没有这条数据";
+					return;
+				}
+				
+				let TbodyEl = document.querySelector(".Tbody");
+				TbodyEl.innerHTML = "";
 
-			datalist.forEach(ele => {
-				let row = document.createElement("div");
-				row.classList.add("row");
+				// phpEl.innerHTML = re;
+				// console.log(re);
+				// return;
+				phpEl.innerHTML = "";
+				datalist = JSON.parse(re);
 
-				row.innerHTML = `
+				datalist.forEach(ele => {
+					let row = document.createElement("div");
+					row.classList.add("row");
+
+					row.innerHTML = `
 					<span>${ele["id"]}</span>
 					<span>${ele["title"]}</span>
 					<span>${ele["content"]}</span>
 					<span>${ele["created_time"]}</span>
-					<span>
+					<span class="operation">
 						<button onclick="remove(${ele["id"]})">Del</button>
 						<button onclick="update(${ele["id"]})">Update</button>
 					</span>
 				`;
 
-				TbodyEl.appendChild(row);
-			});
-		}, "read");
+					TbodyEl.appendChild(row);
+				});
+			},
+			action,
+			data
+		);
 	}
 
 	function submitAction() {
@@ -85,7 +119,7 @@
 		let idEl = document.querySelector(".id");
 		let id = idEl.innerHTML;
 
-		if(!titleEl.value) return;
+		if (!titleEl.value) return;
 
 		let action = "add";
 		let dataObj = {
@@ -95,13 +129,13 @@
 
 		if (id) {
 			action = "update";
-			dataObj['id'] = id;
+			dataObj["id"] = id;
 		}
 
 		httpRe(
 			re => {
 				read();
-				if(action == "update"){
+				if (action == "update") {
 					titleEl.value = "";
 					contentEl.value = "";
 					idEl.innerHTML = "";
@@ -143,18 +177,27 @@
 			// code for IE6, IE5
 			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
 		}
-		
-		if (action == "read") {
-			xmlhttp.open("GET", "test.php?q=" + action, true);
+
+		if (action == "read" || action == "search") {
+			let url = "test.php?q=" + action;
+			if (action == "search") {
+				url += `&data=${JSON.stringify(data)}`;
+			}
+
+			xmlhttp.open("GET", url, true);
 			xmlhttp.send();
-		}else if (action == "add" || action == "remove" || action== "update") {
+		} else if (
+			action == "add" ||
+			action == "remove" ||
+			action == "update"
+		) {
 			xmlhttp.open("POST", "test.php", true);
 			xmlhttp.setRequestHeader(
 				"Content-type",
 				"application/x-www-form-urlencoded"
 			);
 			xmlhttp.send(`q=${action}&data=${JSON.stringify(data)}`);
-		} 
+		}
 
 		xmlhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
