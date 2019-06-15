@@ -8,6 +8,7 @@
 		<link rel="stylesheet" href="style.css" />
 	</head>
 	<body>
+		<!-- todo提交表单 -->
 		<form id="form">
 			<h2>Todo</h2>
 			<label>
@@ -23,11 +24,14 @@
 				<button type="submit">添加</button>
 			</label>
 		</form>
+		<!-- 输出 -->
 		<div class="output">
+			<!-- search表单 -->
 			<form id="searchForm">
 				<input type="text" class="input-search" />
 				<button type="submit">搜索</button>
 			</form>
+			<!-- 结果表格 -->
 			<div class="Thead">
 				<div>ID</div>
 				<div>Title</div>
@@ -36,64 +40,87 @@
 				<div>Operation</div>
 			</div>
 			<div class="Tbody"></div>
+			<!-- php debug 显示区 -->
 			<div class="php"></div>
 		</div>
 	</body>
 </html>
 <script>
+	// 全局变量 存放所有读取的数据方便后面调用
 	let datalist;
 	boot();
-
+	// 启动函数
 	function boot() {
+		// 自动读取所有数据
 		read();
-
+		// 选取todo表单元素
 		let formEl = document.querySelector("#form");
-
+		// 添加todo表单submit事件
 		formEl.addEventListener("submit", e => {
 			e.preventDefault();
+			// 添加或更改事件函数
 			submitAction();
 		});
-
+		// 选取search表单元素
 		let searchFormEl = document.querySelector("#searchForm");
-
+		// 添加search表单submit事件
 		searchFormEl.addEventListener("submit", e => {
 			e.preventDefault();
+			// 读取搜索数据
 			read();
 		});
 	}
-
+	// 读取或搜索数据函数
 	function read() {
+		// 选取search input的value
 		let searchData = document.querySelector(".input-search").value;
+		// 设置action为读取
 		let action = "read";
+		//设置局部变量供后面使用
 		let data;
+		// 选取php debug元素
 		let phpEl = document.querySelector(".php");
-
+		// 如果有输入搜索信息就将action改为搜索，并将data设置为输入的搜索信息
 		if (searchData) {
 			action = "search";
 			data = { query: searchData };
 		}
-
+		// 调用httpRe函数
 		httpRe(
+			// 回调函数
 			re => {
+				let TbodyEl = document.querySelector(".Tbody");
+				// 如果回应信息是error[]就是没有找到数据
+				// p.s. 尚不清楚为什么发过来有多一个[]，但不影响功能
 				if (re == "error[]") {
-					
+					// 将信息反馈 并退出
 					phpEl.innerHTML = "没有这条数据";
+					// 清空已有数据
+					TbodyEl.innerHTML = "";
 					return;
 				}
-				
-				let TbodyEl = document.querySelector(".Tbody");
+				// 清空已有数据
 				TbodyEl.innerHTML = "";
-
+				// php debug 区使用>>>>>>>
 				// phpEl.innerHTML = re;
 				// console.log(re);
 				// return;
-				phpEl.innerHTML = "";
-				datalist = JSON.parse(re);
+				// php debug 区使用<<<<<<<
 
+				// 清空 php debug已有数据
+				phpEl.innerHTML = "";
+				// 开始数据渲染
+				// 解析返回数据并储存到datalist全局变量
+				datalist = JSON.parse(re);
+				// 将每一条数据分开解析
+				// datalist: [
+				// 	{ id: 000, title: 000, content: 000, created_time: 000 }
+				// ];
 				datalist.forEach(ele => {
+					// 创建row元素并添加类
 					let row = document.createElement("div");
 					row.classList.add("row");
-
+					// 设置row内部结构并填充数据
 					row.innerHTML = `
 					<span>${ele["id"]}</span>
 					<span>${ele["title"]}</span>
@@ -104,37 +131,45 @@
 						<button onclick="update(${ele["id"]})">Update</button>
 					</span>
 				`;
-
+					// 将row加到表身
 					TbodyEl.appendChild(row);
 				});
 			},
+			// 如果是 读取 action:"read",data:undefined;
+			// 如果是 搜索 action:"search",data:{query:000}
 			action,
 			data
 		);
 	}
-
+	// 添加或更改 函数
 	function submitAction() {
+		// 获取title,content元素
 		let titleEl = document.querySelector(".input-title");
 		let contentEl = document.querySelector(".input-content");
+		// 获取id元素及内容
 		let idEl = document.querySelector(".id");
 		let id = idEl.innerHTML;
-
+		// 表单验证
 		if (!titleEl.value) return;
-
+		// 设置action为添加
 		let action = "add";
+		// 将表单数据放入dataObj
 		let dataObj = {
 			title: titleEl.value,
 			content: contentEl.value
 		};
-
+		// 如果有id表示是更改
 		if (id) {
+			// 将行为改为更改，并添加id到dataObj
 			action = "update";
 			dataObj["id"] = id;
 		}
-
+		// http请求函数
 		httpRe(
 			re => {
+				// 添加或更改完成后读取数据
 				read();
+				// 清空todo表单
 				if (action == "update") {
 					titleEl.value = "";
 					contentEl.value = "";
@@ -145,30 +180,34 @@
 			dataObj
 		);
 	}
-
+	// 删除一条数据
 	function remove(id) {
+		// http请求函数
 		httpRe(
 			re => {
+				// 完成后读取数据
 				read();
 			},
 			"remove",
 			{ id }
 		);
 	}
-
+	// 更新一条数据
 	function update(id) {
+		// 获取元素
 		let idEl = document.querySelector(".id");
 		let titleEl = document.querySelector(".input-title");
 		let contentEl = document.querySelector(".input-content");
+		// 在全局变量中找到要更新的那条数据
 		let target = datalist.find(ele => {
 			return ele.id == id;
 		});
-
+		// 将内容填充到todo表单以便更新
 		idEl.innerHTML = target.id;
 		titleEl.value = target.title;
 		contentEl.value = target.content;
 	}
-
+	// http请求函数 params:回调，行为，数据
 	function httpRe(callBack, action, data) {
 		if (window.XMLHttpRequest) {
 			// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -177,28 +216,33 @@
 			// code for IE6, IE5
 			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
 		}
-
+		// 如果是读取或搜索 使用GET
 		if (action == "read" || action == "search") {
+			// 将行为加入到url
 			let url = "test.php?q=" + action;
+			// 如果是搜索则将搜索内容加入url
 			if (action == "search") {
 				url += `&data=${JSON.stringify(data)}`;
 			}
-
+			// 开启并发送请求
 			xmlhttp.open("GET", url, true);
 			xmlhttp.send();
+			// 如果是添加，删除，更新 会变动数据的 使用POST
 		} else if (
 			action == "add" ||
 			action == "remove" ||
 			action == "update"
 		) {
+			// 开启，设置请求头
 			xmlhttp.open("POST", "test.php", true);
 			xmlhttp.setRequestHeader(
 				"Content-type",
 				"application/x-www-form-urlencoded"
 			);
+			// 发送请求 q=行为 data=数据
 			xmlhttp.send(`q=${action}&data=${JSON.stringify(data)}`);
 		}
-
+		// 获取http请求返回值，并调用回调函数
 		xmlhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				callBack(this.responseText);
