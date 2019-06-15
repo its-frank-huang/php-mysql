@@ -32,4 +32,12 @@ form label > * {
   margin-bottom: 0.5rem;
 }
 
-/*# sourceMappingURL=style.css.map */
+.Thead,.row{
+  display: grid;
+  grid-template-columns: .5fr 2fr 4fr 4fr 2.5fr;
+  border-bottom: #ccc 1px solid ;
+  padding: .5rem 0;
+}
+.Thead{
+  border-color: #444;
+}

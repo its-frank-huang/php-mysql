@@ -17,60 +17,125 @@
 			<label>
 				<span>内容</span>
 				<input type="text" class="input-content" />
+				<span class="id" hidden>123</span>
 			</label>
 			<label>
 				<button type="submit">添加</button>
 			</label>
 		</form>
 		<div class="output">
-			Lorem ipsum dolor sit amet consectetur, adipisicing elit. Minima,
-			eaque quisquam sit alias praesentium est cupiditate veniam veritatis
-			ipsa consequuntur officia itaque repellat nemo voluptatibus quas
-			reprehenderit saepe ex. Consequatur? Lorem ipsum dolor sit amet
-			consectetur, adipisicing elit. Minima, eaque quisquam sit alias
-			praesentium est cupiditate veniam veritatis ipsa consequuntur
-			officia itaque repellat nemo voluptatibus quas reprehenderit saepe
-			ex. Consequatur? Lorem ipsum dolor sit amet consectetur, adipisicing
-			elit. Minima, eaque quisquam sit alias praesentium est cupiditate
-			veniam veritatis ipsa consequuntur officia itaque repellat nemo
-			voluptatibus quas reprehenderit saepe ex. Consequatur? Lorem ipsum
-			dolor sit amet consectetur, adipisicing elit. Minima, eaque quisquam
-			sit alias praesentium est cupiditate veniam veritatis ipsa
-			consequuntur officia itaque repellat nemo voluptatibus quas
-			reprehenderit saepe ex. Consequatur? Lorem ipsum dolor sit amet
-			consectetur, adipisicing elit. Minima, eaque quisquam sit alias
-			praesentium est cupiditate veniam veritatis ipsa consequuntur
-			officia itaque repellat nemo voluptatibus quas reprehenderit saepe
-			ex. Consequatur? Lorem ipsum dolor sit amet consectetur, adipisicing
-			elit. Minima, eaque quisquam sit alias praesentium est cupiditate
-			veniam veritatis ipsa consequuntur officia itaque repellat nemo
-			voluptatibus quas reprehenderit saepe ex. Consequatur? Lorem ipsum
-			dolor sit amet consectetur, adipisicing elit. Minima, eaque quisquam
-			sit alias praesentium est cupiditate veniam veritatis ipsa
-			consequuntur officia itaque repellat nemo voluptatibus quas
-			reprehenderit saepe ex. Consequatur? Lorem ipsum dolor sit amet
-			consectetur, adipisicing elit. Minima, eaque quisquam sit alias
-			praesentium est cupiditate veniam veritatis ipsa consequuntur
-			officia itaque repellat nemo voluptatibus quas reprehenderit saepe
-			ex. Consequatur? Lorem ipsum dolor sit amet consectetur, adipisicing
-			elit. Minima, eaque quisquam sit alias praesentium est cupiditate
-			veniam veritatis ipsa consequuntur officia itaque repellat nemo
-			voluptatibus quas reprehenderit saepe ex. Consequatur?
+			<div class="Thead">
+				<div>ID</div>
+				<div>Title</div>
+				<div>Content</div>
+				<div>Time</div>
+				<div>Operation</div>
+			</div>
+			<div class="Tbody"></div>
 		</div>
 	</body>
 </html>
 <script>
-	let formEl = document.querySelector("#form");
+	let datalist;
+	boot();
 
-	formEl.addEventListener("submit", e => {
-		e.preventDefault();
+	function boot() {
+		read();
+
+		let formEl = document.querySelector("#form");
+
+		formEl.addEventListener("submit", e => {
+			e.preventDefault();
+			submitAction();
+		});
+	}
+
+	function read() {
+		httpRe(re => {
+			if (!re) return;
+
+			let TbodyEl = document.querySelector(".Tbody");
+			TbodyEl.innerHTML = "";
+
+			datalist = JSON.parse(re);
+
+			datalist.forEach(ele => {
+				let row = document.createElement("div");
+				row.classList.add("row");
+
+				row.innerHTML = `
+					<span>${ele["id"]}</span>
+					<span>${ele["title"]}</span>
+					<span>${ele["content"]}</span>
+					<span>${ele["created_time"]}</span>
+					<span>
+						<button onclick="remove(${ele["id"]})">Del</button>
+						<button onclick="update(${ele["id"]})">Update</button>
+					</span>
+				`;
+
+				TbodyEl.appendChild(row);
+			});
+		}, "read");
+	}
+
+	function submitAction() {
 		let titleEl = document.querySelector(".input-title");
 		let contentEl = document.querySelector(".input-content");
+		let idEl = document.querySelector(".id");
+		let id = idEl.innerHTML;
 
-		httpre(titleEl.value);
-	});
+		if(!titleEl.value) return;
 
-	function httpre(data) {
+		let action = "add";
+		let dataObj = {
+			title: titleEl.value,
+			content: contentEl.value
+		};
+
+		if (id) {
+			action = "update";
+			dataObj['id'] = id;
+		}
+
+		httpRe(
+			re => {
+				read();
+				if(action == "update"){
+					titleEl.value = "";
+					contentEl.value = "";
+					idEl.innerHTML = "";
+				}
+			},
+			action,
+			dataObj
+		);
+	}
+
+	function remove(id) {
+		httpRe(
+			re => {
+				read();
+			},
+			"remove",
+			{ id }
+		);
+	}
+
+	function update(id) {
+		let idEl = document.querySelector(".id");
+		let titleEl = document.querySelector(".input-title");
+		let contentEl = document.querySelector(".input-content");
+		let target = datalist.find(ele => {
+			return ele.id == id;
+		});
+
+		idEl.innerHTML = target.id;
+		titleEl.value = target.title;
+		contentEl.value = target.content;
+	}
+
+	function httpRe(callBack, action, data) {
 		if (window.XMLHttpRequest) {
 			// code for IE7+, Firefox, Chrome, Opera, Safari
 			xmlhttp = new XMLHttpRequest();
@@ -78,12 +143,23 @@
 			// code for IE6, IE5
 			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
 		}
+		
+		if (action == "read") {
+			xmlhttp.open("GET", "test.php?q=" + action, true);
+			xmlhttp.send();
+		}else if (action == "add" || action == "remove" || action== "update") {
+			xmlhttp.open("POST", "test.php", true);
+			xmlhttp.setRequestHeader(
+				"Content-type",
+				"application/x-www-form-urlencoded"
+			);
+			xmlhttp.send(`q=${action}&data=${JSON.stringify(data)}`);
+		} 
+
 		xmlhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
-                document.querySelector('.output').innerHTML = this.responseText;
+				callBack(this.responseText);
 			}
 		};
-		xmlhttp.open("GET", "test.php?q=" + data, true);
-		xmlhttp.send();
 	}
 </script>
