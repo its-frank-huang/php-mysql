@@ -38,7 +38,7 @@ export default {
 			let upassSpan = document.getElementById("upassSpan");
 
 			if (uName && uPass) {
-				if (uName !== "terry" || uPass !== "123456") {
+				if (uName !== "terry" || uPass !== "3943") {
 					unameInputClass.add("invalid");
 					upassInputClass.add("invalid");
 					unameInputClass.remove("valid");
