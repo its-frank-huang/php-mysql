@@ -18,7 +18,7 @@
 			<label>
 				<span>内容</span>
 				<input type="text" class="input-content" />
-				<span class="id" hidden>123</span>
+				<span class="id" hidden></span>
 			</label>
 			<label>
 				<button type="submit">添加</button>
@@ -102,9 +102,9 @@
 				// 清空已有数据
 				TbodyEl.innerHTML = "";
 				// php debug 区使用>>>>>>>
-				// phpEl.innerHTML = re;
-				// console.log(re);
-				// return;
+				phpEl.innerHTML = re;
+				console.log(re);
+				return;
 				// php debug 区使用<<<<<<<
 
 				// 清空 php debug已有数据
@@ -170,11 +170,10 @@
 				// 添加或更改完成后读取数据
 				read();
 				// 清空todo表单
-				if (action == "update") {
-					titleEl.value = "";
-					contentEl.value = "";
-					idEl.innerHTML = "";
-				}
+
+				titleEl.value = "";
+				contentEl.value = "";
+				idEl.innerHTML = "";
 			},
 			action,
 			dataObj

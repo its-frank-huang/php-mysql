@@ -85,10 +85,10 @@ function add()
 // 数据库请求函数
 function mysqlRe($sql)
 {
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "test-todo";
+    $servername = "my9866499.xincache2.cn";
+    $username = "my9866499";
+    $password = "rootroot";
+    $dbname = "my9866499";
 
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
