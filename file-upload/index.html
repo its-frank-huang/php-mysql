@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>file upload test</title>
+		<style>
+			#drop-zone {
+				margin: 1em;
+				width: 5em;
+				height: 6em;
+				border: 2px dashed #444;
+				border-radius: 5px;
+				text-align: center;
+				line-height: 6em;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="drop-zone">拖放图片</div>
+		<input type="file" name="file" id="file" />
+		<div id="preview"></div>
+		<script>
+			let fileEl = document.getElementById("file");
+			let dropEl = document.getElementById("drop-zone");
+
+			fileEl.addEventListener("change", e => {
+				let file = e.target.files[0];
+
+				filePreview(file);
+			});
+
+			dropEl.addEventListener("dragover", e => {
+				e.stopPropagation();
+				e.preventDefault();
+				e.dataTransfer.dropEffect = "copy";
+			});
+
+			dropEl.addEventListener("drop", e => {
+				e.stopPropagation();
+				e.preventDefault();
+
+				let file = e.dataTransfer.files[0];
+
+				filePreview(file);
+			});
+
+			function filePreview(file) {
+				if (!file.type.match("image.*")) {
+					alert("仅支持图片");
+					return;
+				}
+
+				let reader = new FileReader();
+
+				reader.onload = e => {
+					// Render thumbnail.
+					let previewEl = document.getElementById("preview");
+
+					previewEl.innerHTML = `
+                <div>${e.target.result}</div>
+                <div><img src="${e.target.result}"></div>
+                <div>name: ${file.name}</div>
+                <div>type: ${file.type}</div>
+                <div>size: ${file.size}</div>
+                <div>time: ${file.lastModifiedDate.toLocaleDateString()}</div>
+                `;
+				};
+
+                reader.readAsDataURL(file);
+			}
+		</script>
+	</body>
+</html>
