@@ -45,7 +45,7 @@
 			<div class="modal-content">
 			</div>
 			<div class="modal-footer">
-				<a href="#!" class="modal-close waves-effect waves-teal btn-flat">返回</a>
+				<a class="modal-close waves-effect waves-teal btn-flat">返回</a>
 			</div>
 		</div>
 	</div>
@@ -177,7 +177,6 @@ export default {
 				return;
 			}
 
-			console.log(img.type);
 			if (img.type == "image/jpeg" || img.type == "image/png") {
 				let reader = new FileReader();
 

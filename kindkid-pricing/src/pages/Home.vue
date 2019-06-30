@@ -40,13 +40,15 @@
 						</div>
 						<div>
 							<span class="badge new teal lighten-2" data-badge-caption>{{item.id}}</span>
-							<span class="item-title" :title="item.name">
-								{{
-								item.name.length > 10?
-								item.name.substr(0,6) + "...":
-								item.name
-								}}
-							</span>
+							<router-link :to="'/detail/'+item.id" class="detail-link">
+								<span class="item-title" :title="item.name">
+									{{
+									item.name.length > 10?
+									item.name.substr(0,6) + "...":
+									item.name
+									}}
+								</span>
+							</router-link>
 							<div>
 								<span>价格: {{item.cprice}}￥</span>
 								<span>件数: {{item.camount}}件</span>
@@ -71,9 +73,7 @@
 		<div id="modal" class="modal">
 			<div class="modal-content"></div>
 			<div class="modal-footer">
-				<a @click="itemRemove = true"
-					class="btn left modal-close red waves-effect waves-light"
-				>确定</a>
+				<a @click="itemRemove = true" class="btn left modal-close red waves-effect waves-light">确定</a>
 				<a class="btn modal-close teal waves-effect waves-light">取消</a>
 			</div>
 		</div>
@@ -83,8 +83,128 @@
 export default {
 	data() {
 		return {
-			// list: [{"id":"21","name":"\u8fde\u8863\u88d9\u80cc\u5305\u9879\u94fe\u88e4\u5b50\u8863\u670d\u889c\u5b50\u62d6\u978b\u53ef\u601c","cprice":"200","camount":"1020","price_list":"[200]","amount_list":"[1020]","img":"21.png","lprice":null,"lamount":null,"color":"\u7ea2\u8272","time":"2019-06-30 12:53:49"},{"id":"20","name":"\u80cc\u5fc3","cprice":"200","camount":"1200","price_list":"[200]","amount_list":"[1200]","img":"20.png","lprice":null,"lamount":null,"color":"\u767d\u8272","time":"2019-06-30 12:48:58"},{"id":"19","name":"\u80cc\u5305","cprice":"200","camount":"120","price_list":"[200]","amount_list":"[120]","img":null,"lprice":null,"lamount":null,"color":"\u9ed1\u8272","time":"2019-06-30 12:36:02"},{"id":"18","name":"\u8fde\u8863\u88d9","cprice":"222","camount":"113","price_list":"[222]","amount_list":"[113]","img":null,"lprice":null,"lamount":null,"color":null,"time":"2019-06-28 23:59:13"},{"id":"16","name":"\u8fde\u8863\u88d9\u80cc\u5305\u9879\u94fe\u88e4\u5b50\u8863\u670d\u889c\u5b50\u62d6\u978b\u53ef\u601c","cprice":"77","camount":"25","price_list":"[77]","amount_list":"[25]","img":null,"lprice":null,"lamount":null,"color":null,"time":"2019-06-28 18:02:04"},{"id":"15","name":"\u80cc\u5305","cprice":"100","camount":"20","price_list":"[100]","amount_list":"[20]","img":null,"lprice":null,"lamount":null,"color":"\u9ed1\u8272","time":"2019-06-28 15:31:56"},{"id":"1","name":"\u80cc\u5305","cprice":"100","camount":"20","price_list":null,"amount_list":null,"img":null,"lprice":null,"lamount":null,"color":null,"time":"2019-06-28 15:25:08"},{"id":"14","name":"\u80cc\u5305","cprice":"100","camount":"20","price_list":"[100]","amount_list":"[20]","img":null,"lprice":null,"lamount":null,"color":"\u9ed1\u8272","time":"2019-06-28 15:25:08"},{"id":"13","name":"\u80cc\u5305","cprice":"100","camount":"20","price_list":null,"amount_list":null,"img":null,"lprice":null,"lamount":null,"color":"\u9ed1\u8272","time":"2019-06-28 15:25:08"}],
-			list: [],
+			list: [
+				{
+					id: "21",
+					name:
+						"\u8fde\u8863\u88d9\u80cc\u5305\u9879\u94fe\u88e4\u5b50\u8863\u670d\u889c\u5b50\u62d6\u978b\u53ef\u601c",
+					cprice: "200",
+					camount: "1020",
+					price_list: "[200]",
+					amount_list: "[1020]",
+					img: "21.png",
+					lprice: null,
+					lamount: null,
+					color: "\u7ea2\u8272",
+					time: "2019-06-30 12:53:49"
+				},
+				{
+					id: "20",
+					name: "\u80cc\u5fc3",
+					cprice: "200",
+					camount: "1200",
+					price_list: "[200]",
+					amount_list: "[1200]",
+					img: "20.png",
+					lprice: null,
+					lamount: null,
+					color: "\u767d\u8272",
+					time: "2019-06-30 12:48:58"
+				},
+				{
+					id: "19",
+					name: "\u80cc\u5305",
+					cprice: "200",
+					camount: "120",
+					price_list: "[200]",
+					amount_list: "[120]",
+					img: null,
+					lprice: null,
+					lamount: null,
+					color: "\u9ed1\u8272",
+					time: "2019-06-30 12:36:02"
+				},
+				{
+					id: "18",
+					name: "\u8fde\u8863\u88d9",
+					cprice: "222",
+					camount: "113",
+					price_list: "[222]",
+					amount_list: "[113]",
+					img: null,
+					lprice: null,
+					lamount: null,
+					color: null,
+					time: "2019-06-28 23:59:13"
+				},
+				{
+					id: "16",
+					name:
+						"\u8fde\u8863\u88d9\u80cc\u5305\u9879\u94fe\u88e4\u5b50\u8863\u670d\u889c\u5b50\u62d6\u978b\u53ef\u601c",
+					cprice: "77",
+					camount: "25",
+					price_list: "[77]",
+					amount_list: "[25]",
+					img: null,
+					lprice: null,
+					lamount: null,
+					color: null,
+					time: "2019-06-28 18:02:04"
+				},
+				{
+					id: "15",
+					name: "\u80cc\u5305",
+					cprice: "100",
+					camount: "20",
+					price_list: "[100]",
+					amount_list: "[20]",
+					img: null,
+					lprice: null,
+					lamount: null,
+					color: "\u9ed1\u8272",
+					time: "2019-06-28 15:31:56"
+				},
+				{
+					id: "1",
+					name: "\u80cc\u5305",
+					cprice: "100",
+					camount: "20",
+					price_list: null,
+					amount_list: null,
+					img: null,
+					lprice: null,
+					lamount: null,
+					color: null,
+					time: "2019-06-28 15:25:08"
+				},
+				{
+					id: "14",
+					name: "\u80cc\u5305",
+					cprice: "100",
+					camount: "20",
+					price_list: "[100]",
+					amount_list: "[20]",
+					img: null,
+					lprice: null,
+					lamount: null,
+					color: "\u9ed1\u8272",
+					time: "2019-06-28 15:25:08"
+				},
+				{
+					id: "13",
+					name: "\u80cc\u5305",
+					cprice: "100",
+					camount: "20",
+					price_list: null,
+					amount_list: null,
+					img: null,
+					lprice: null,
+					lamount: null,
+					color: "\u9ed1\u8272",
+					time: "2019-06-28 15:25:08"
+				}
+			],
+			// list: [],
 			itemRemove: false
 		};
 	},
@@ -121,7 +241,7 @@ export default {
 					if (me.itemRemove) {
 						let body = new FormData();
 						body.append("action", "remove");
-						body.append("data", `id:${item.id}`);
+						body.append("id", item.id);
 
 						let fetchData = {
 							method: "POST",
@@ -150,6 +270,14 @@ export default {
 };
 </script>
 <style>
+.detail-link{
+	color: black;
+	display: inline-block;
+	line-height: 0;
+}
+.detail-link:hover{
+	color: #444;
+}
 ul.list li.list-item button.btn {
 	height: 100%;
 	padding: 0;
