@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Vue-todoList</title>
+    <script src="./lib/vue.min.js"></script>
+    <script src="./lib/axios.min.js"></script>
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href='css/index.css' rel='stylesheet' type='text/css'>
+</head>
+
+<body>
+    <div class="container" id="todo">
+        <section class="panel">
+            <input v-model="newTask" @keyup.enter="addTask" placeholder="plase" class="form-control shuru">
+            <button @click="addTask" class="btn btn-primary">新增</button>
+        </section>
+        <section class="list">
+            <table class="table row">
+                <thead>
+                    <tr>
+                        <th class="col-xs-1">序号</th>
+                        <th class="col-xs-7">名称</th>
+                        <th class="col-xs-2">操作</th>
+                    </tr>
+                </thead>
+            </table>
+            <ul class="list-item row">
+                <li v-for="(task,index) in tasks" class="list-item-con">
+                    <input type="text" v-if="task === editingTask" class="form-control" @keyup.enter="endEditing(task.todoId,task.todoText)" @blur="endEditing(task.todoId,task.todoText)" v-model="task.todoText">
+                    <label for="checkbox" class="col-xs-1">{{ task.todoId }}</label>
+                    <label for="checkbox" v-if="task !== editingTask" @dblclick="editTask(task)" class="col-xs-7 toto_title">{{ task.todoText }}</label>
+                    <button v-if="task !== editingTask" @click="editTask(task)" class="btn btn-info">编辑</button>
+                    <button v-if="task == editingTask" @click="endEditing(task.todoId,task.todoText)" class="btn btn-success">完成</button>
+                    <button class="delete btn btn-danger" @click="removeTask(index,task.todoId)">删除</button>
+                </li>
+            </ul>
+        </section>
+    </div>
+    <script tyle="text/javascript">
+        new Vue({
+            el: "#todo",
+            data: {
+                newTask: "",
+                tasks: [],
+                editingTask: {}
+            },
+
+            methods: {
+                /*增*/
+                addTask: function() {
+                    var _this = this;
+                    var task = this.newTask.trim();
+                    if (task) {
+                        axios.get('./Data/addMes.php', {
+                                params: {
+                                    todoText: task
+                                }
+                            })
+                            .then(function(response) {
+                                /*console.log(response);
+                                _this.tasks.push({
+                                    todoText: task
+                                });
+                                _this.newTask = "";*/
+                                axios.get('./Data/queryMes.php')
+                                    .then(function(response) {
+                                        // _this.tasks = response.data.result;
+                                        // console.log(response);
+                                        // var obj = JSON.parse(JSON.stringify(response));
+                                        _this.tasks = response.data;
+                                        // //this.list.push(response.data);
+                                        console.log(_this.tasks);
+
+                                        // _this.tasks = response.data;
+                                    })
+                            })
+                            .catch(function(error) {
+                                console.log(error);
+                            });
+                    }
+                },
+
+
+                /*删*/
+                removeTask: function(index, todoId) {
+                    var _this = this;
+                    axios.get('./Data/delMes.php', {
+                            params: {
+                                todoId: todoId,
+                            }
+                        })
+                        .then(function(response) {
+                            _this.tasks.splice(index, 1);
+                        })
+                        .catch(function(error) {
+                            console.log(error);
+                        });
+
+                },
+
+                /*改*/
+                editTask: function(task) {
+                    this.editingTask = task;
+                },
+
+                /*修改提交*/
+                endEditing: function(todoId, todoText) {
+                    this.editingTask = {};
+                    var _this = this;
+                    axios.get('./Data/editMes.php', {
+                            params: {
+                                todoId: todoId,
+                                todoText: todoText
+                            }
+                        })
+                        .then(function(response) {
+
+                        })
+                        .catch(function(error) {
+                            console.log(error);
+                        });
+
+                }
+            },
+
+
+            created() {
+                var _this = this;
+                //获取数据
+                axios.get("./Data/queryMes.php")
+                    .then(function(response) {
+                        // _this.tasks = response.data.result;
+                        _this.tasks = response.data;
+                        // console.log(response);
+                        // console.log(response.data);
+                        // console.log(response.data.result);
+                        // console.log(_this.tasks);
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                    });
+            }
+        });
+    </script>
+</body>
+
+</html>
